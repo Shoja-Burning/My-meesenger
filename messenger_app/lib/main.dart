@@ -8,8 +8,8 @@ import 'package:image_picker/image_picker.dart';
 const firebaseOptions = FirebaseOptions(
   apiKey: "AIzaSyAFuS18VE_Od96PNwlRrWljCKzhMlkxTds",
   authDomain: "://firebaseapp.com",
-  projectId: "pulsechat-cc903",
-  storageBucket: "pulsechat-cc903.firebasestorage.app",
+  projectId: "pulsechat-cc983",
+  storageBucket: "pulsechat-cc983.firebasestorage.app",
   messagingSenderId: "295516593180",
   appId: "1:295516593180:ios:1b32681ba5c7c6232653d9",
 );
