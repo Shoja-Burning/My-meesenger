@@ -16,9 +16,9 @@ const firebaseOptions = FirebaseOptions(
   iosBundleId: "com.example.messengerApp",
 );
 
-void main() async {
+void main() {
   WidgetsFlutterBinding.ensureInitialized();
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) { await Firebase.initializeApp(); } else { await Firebase.initializeApp(options: firebaseOptions); }
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) { await Firebase.initializeApp(); } else { Firebase.initializeApp(options: firebaseOptions); }
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: false,
   );
