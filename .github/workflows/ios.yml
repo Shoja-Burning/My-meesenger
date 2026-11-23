@@ -11,12 +11,10 @@ jobs:
       - run: |
           cd messenger_app
           flutter pub get
-          flutter build ios --config-only --no-codesign
-          cd ios
-          xcodebuild -workspace Runner.xcworkspace -scheme Runner -configuration Release -sdk iphoneos -derivedDataPath ../build/ios CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build
-          cd ..
+          sed -i '' 's/CODE_SIGN_STYLE = Automatic;/CODE_SIGN_STYLE = Manual;/g' ios/Runner.xcodeproj/project.pbxproj
+          flutter build ios --release --no-codesign
           mkdir -p Payload
-          cp -r build/ios/Build/Products/Release-iphoneos/Runner.app Payload/
+          cp -r build/ios/iphoneos/Runner.app Payload/
           zip -r ../PulseChat.ipa Payload
       - uses: actions/upload-artifact@v4
         with:
