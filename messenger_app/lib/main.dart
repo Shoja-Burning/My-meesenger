@@ -6,31 +6,19 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 
-FirebaseOptions get firebaseOptions {
-  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) {
-    return const FirebaseOptions(
-      apiKey: "AIzaSyAFuS18VE_Od96PNwlRrWljCKzhMlkxTds",
-      authDomain: "://firebaseapp.com",
-      projectId: "pulsechat-cc983",
-      storageBucket: "pulsechat-cc983.firebasestorage.app",
-      messagingSenderId: "295516593180",
-      appId: "1:295516593180:ios:1b32681ba5c7c6232653d9",
-      iosBundleId: "com.example.messengerApp",
-    );
-  }
-  return const FirebaseOptions(
-    apiKey: "AIzaSyATrQBfZCFcy_pI5vn0BjLh703pF6yKZvo",
-    authDomain: "://firebaseapp.com",
-    projectId: "pulsechat-cc983",
-    storageBucket: "pulsechat-cc983.firebasestorage.app",
-    messagingSenderId: "295516593180",
-    appId: "1:295516593180:web:4d4464b0d6128eb72653d9",
-  );
-}
+const firebaseOptions = FirebaseOptions(
+  apiKey: "AIzaSyAFuS18VE_Od96PNwlRrWljCKzhMlkxTds",
+  authDomain: "://firebaseapp.com",
+  projectId: "pulsechat-cc903",
+  storageBucket: "pulsechat-cc903.firebasestorage.app",
+  messagingSenderId: "295516593180",
+  appId: "1:295516593180:ios:1b32681ba5c7c6232653d9",
+  iosBundleId: "com.example.messengerApp",
+);
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: firebaseOptions);
+  if (!kIsWeb && defaultTargetPlatform == TargetPlatform.iOS) { await Firebase.initializeApp(); } else { await Firebase.initializeApp(options: firebaseOptions); }
   FirebaseFirestore.instance.settings = const Settings(
     persistenceEnabled: false,
   );
