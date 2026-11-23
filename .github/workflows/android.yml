@@ -1,0 +1,18 @@
+name: Build Android APK
+on: [workflow_dispatch]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: |
+          cd messenger_app
+          flutter pub get
+          flutter build apk --release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: PulseChat-Android
+          path: messenger_app/build/app/outputs/flutter-apk/app-release.apk
