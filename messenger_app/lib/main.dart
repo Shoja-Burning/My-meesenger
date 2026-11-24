@@ -62,12 +62,22 @@ class FirestoreRest {
   }
 
   static Future<void> setDoc(String path, Map<String, dynamic> data) async {
-    final res = await http.patch(
+    var res = await http.patch(
       Uri.parse('$baseUrl/$path'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode(_toFields(data)),
     ).timeout(const Duration(seconds: 10));
-    if (res.statusCode != 200) throw Exception('Ошибка сохранения (${res.statusCode})');
+    if (res.statusCode == 404) {
+      final parts = path.split('/');
+      final col = parts.sublist(0, parts.length - 1).join('/');
+      final docId = parts.last;
+      res = await http.post(
+        Uri.parse('$baseUrl/$col?documentId=$docId'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode(_toFields(data)),
+      ).timeout(const Duration(seconds: 10));
+    }
+    if (res.statusCode != 200) throw Exception('Ошибка сохранения (${res.statusCode}): ${res.body}');
   }
 
   static Future<void> addDoc(String collectionPath, Map<String, dynamic> data) async {
