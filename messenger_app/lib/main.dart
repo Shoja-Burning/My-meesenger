@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:image_picker/image_picker.dart';
 
-const String projectId = 'pulsechat-cc903';
+const String projectId = 'pulsechat-20752';
 const String baseUrl = 'https://googleapis.com';
 
 void main() {
