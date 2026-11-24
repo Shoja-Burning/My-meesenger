@@ -353,7 +353,7 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
         }
       }
     } catch (e) {
-      setState(() => _error = 'Ошибка связи с сервером');
+      setState(() => _error = 'Ошибка: $e');
     } finally {
       if (mounted) setState(() => _loading = false);
     }
