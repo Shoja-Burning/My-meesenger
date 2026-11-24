@@ -287,8 +287,6 @@ class AuthScreen extends StatefulWidget {
 
 class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
   final _nickController = TextEditingController();
-  final _passController = TextEditingController();
-  bool _isLogin = true;
   bool _loading = false;
   String? _error;
   late AnimationController _pulseCtrl;
@@ -305,55 +303,36 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
     super.dispose();
   }
 
-  Future<void> _submit() async {
+  Future<void> _enterChat() async {
     final nick = _nickController.text.trim();
-    final pass = _passController.text.trim();
-    if (nick.length < 3 || nick.length > 18) {
-      setState(() => _error = 'Ник от 3 до 18 символов');
-      return;
-    }
-    if (pass.length < 4) {
-      setState(() => _error = 'Пароль минимум 4 символа');
+    if (nick.length < 2 || nick.length > 18) {
+      setState(() => _error = "Ник должен быть от 2 до 18 символов");
       return;
     }
     setState(() { _loading = true; _error = null; });
     final nickLower = nick.toLowerCase();
     try {
-      final doc = await FirestoreRest.getDoc('users/$nickLower');
-      if (_isLogin) {
-        if (doc == null) {
-          setState(() => _error = 'Пользователь не найден');
-        } else if (doc['password'] != pass) {
-          setState(() => _error = 'Неверный пароль');
-        } else {
-          if (!mounted) return;
-          Navigator.pushReplacement(context, createSmoothRoute(HomeScreen(currentUserId: nickLower)));
-        }
-      } else {
-        if (doc != null) {
-          setState(() => _error = 'Ник уже занят');
-        } else {
-          final allUsers = await FirestoreRest.getCollection('users');
-          final isCreator = allUsers.isEmpty;
-          await FirestoreRest.setDoc('users/$nickLower', {
-            'username': nick,
-            'usernameLower': nickLower,
-            'password': pass,
-            'bio': isCreator ? 'Создатель PulseChat 👑' : 'На связи в PulseChat ⚡',
-            'avatarBase64': '',
-            'isCreator': isCreator,
-            'showOnline': true,
-            'xp': isCreator ? 100 : 20,
-            'ownedItems': 'bg_default,frame_none',
-            'activeBg': 'bg_default',
-            'activeFrame': 'frame_none',
-          });
-          if (!mounted) return;
-          Navigator.pushReplacement(context, createSmoothRoute(HomeScreen(currentUserId: nickLower)));
-        }
+      final doc = await FirestoreRest.getDoc("users/$nickLower");
+      if (doc == null) {
+        final allUsers = await FirestoreRest.getCollection("users");
+        final isCreator = allUsers.isEmpty;
+        await FirestoreRest.setDoc("users/$nickLower", {
+          "username": nick,
+          "usernameLower": nickLower,
+          "bio": isCreator ? "Создатель PulseChat 👑" : "На связи в PulseChat ⚡",
+          "avatarBase64": "",
+          "isCreator": isCreator,
+          "showOnline": true,
+          "xp": isCreator ? 100 : 20,
+          "ownedItems": "bg_default,frame_none",
+          "activeBg": "bg_default",
+          "activeFrame": "frame_none",
+        });
       }
+      if (!mounted) return;
+      Navigator.pushReplacement(context, createSmoothRoute(HomeScreen(currentUserId: nickLower)));
     } catch (e) {
-      setState(() => _error = 'Ошибка: $e');
+      setState(() => _error = "Ошибка: $e");
     } finally {
       if (mounted) setState(() => _loading = false);
     }
@@ -391,51 +370,35 @@ class _AuthScreenState extends State<AuthScreen> with TickerProviderStateMixin {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text('PulseChat', style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold)),
+                  const Text("PulseChat", style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 6),
-                  Text(_isLogin ? 'Вход в аккаунт' : 'Регистрация (+20 XP бонус ⚡)', style: const TextStyle(color: Colors.grey)),
-                  const SizedBox(height: 24),
+                  const Text("Введи никнейм, чтобы войти в чат ⚡", style: TextStyle(color: Colors.grey)),
+                  const SizedBox(height: 28),
                   TextField(
                     controller: _nickController,
                     maxLength: 18,
+                    onSubmitted: (_) => _enterChat(),
                     decoration: InputDecoration(
-                      labelText: 'Никнейм',
+                      labelText: "Твой никнейм",
                       prefixIcon: const Icon(Icons.alternate_email),
                       filled: true,
                       fillColor: const Color(0xFF151F32),
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
                     ),
                   ),
-                  const SizedBox(height: 12),
-                  TextField(
-                    controller: _passController,
-                    obscureText: true,
-                    onSubmitted: (_) => _submit(),
-                    decoration: InputDecoration(
-                      labelText: 'Пароль',
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      filled: true,
-                      fillColor: const Color(0xFF151F32),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
-                    ),
-                  ),
                   if (_error != null)
-                    Padding(padding: const EdgeInsets.only(top: 12), child: Text(_error!, style: const TextStyle(color: Colors.redAccent))),
+                    Padding(padding: const EdgeInsets.only(top: 12), child: Text(_error!, style: const TextStyle(color: Colors.redAccent), textAlign: TextAlign.center)),
                   const SizedBox(height: 20),
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: _loading ? null : _submit,
+                      onPressed: _loading ? null : _enterChat,
                       style: ElevatedButton.styleFrom(backgroundColor: accent, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16))),
                       child: _loading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : Text(_isLogin ? 'Войти' : 'Создать аккаунт', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
+                          : const Text("Войти в чат", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.white)),
                     ),
-                  ),
-                  TextButton(
-                    onPressed: () => setState(() { _isLogin = !_isLogin; _error = null; }),
-                    child: Text(_isLogin ? 'Нет аккаунта? Регистрация' : 'Уже есть аккаунт? Войти'),
                   ),
                 ],
               ),
@@ -506,7 +469,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   String _getChatId(String u1, String u2) {
     final list = [u1, u2]..sort();
-    return '${list}_${list}';
+    return list.join('_');
   }
 
   @override
